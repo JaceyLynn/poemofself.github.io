@@ -3,10 +3,13 @@ class PoemGenerator {
         this.textResult = document.getElementById('textResult');
         this.userInput = document.getElementById('userInput');
         this.nextButton = document.getElementById('nextButton');
+        this.counter = document.getElementById('counter');
         
         this.currentLine = 0;
         this.lines = [];
         this.isTyping = false;
+        this.inputCount = 0;
+        this.maxInputs = 20;
         this.sentenceStarters = [
             "I'm",
             "I'm also",
@@ -96,6 +99,9 @@ class PoemGenerator {
         const userValue = this.userInput.value.trim();
         if (!userValue) return;
         
+        // Check if we've reached the limit
+        if (this.inputCount >= this.maxInputs) return;
+        
         // Finalize current line with user input
         let baseLine = this.lines[this.currentLine];
         
@@ -113,6 +119,17 @@ class PoemGenerator {
         }
         
         this.lines[this.currentLine] = baseLine + ' ' + userValue;
+        
+        // Increment input count
+        this.inputCount++;
+        this.updateCounter();
+        
+        // Check if we've reached the limit
+        if (this.inputCount >= this.maxInputs) {
+            // Finalize the poem and trigger download
+            this.finalizePoemAndDownload();
+            return;
+        }
         
         // Move to next line with a random sentence starter
         this.currentLine++;
@@ -161,6 +178,42 @@ class PoemGenerator {
         setTimeout(() => {
             this.textResult.classList.remove('typing-effect');
         }, 3000);
+    }
+    
+    updateCounter() {
+        this.counter.textContent = `${this.inputCount}/20`;
+        
+        // Update button text when nearing limit
+        if (this.inputCount >= this.maxInputs) {
+            this.nextButton.textContent = 'Done';
+            this.nextButton.disabled = true;
+            this.userInput.disabled = true;
+        }
+    }
+    
+    finalizePoemAndDownload() {
+        // Remove the ellipsis from the last line if present
+        let finalPoem = this.lines.slice(0, this.inputCount).join('\n');
+        
+        // Create a blob with the poem text
+        const blob = new Blob([finalPoem], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        
+        // Create a temporary download link and trigger it
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'poem-of-yourself.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        // Update display to show final poem without ellipsis
+        this.textResult.textContent = finalPoem;
+        
+        // Disable inputs
+        this.nextButton.disabled = true;
+        this.userInput.disabled = true;
     }
     
     // Method to simulate typing animation (optional enhancement)
