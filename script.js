@@ -73,15 +73,18 @@ class PoemGenerator {
         let baseLine = this.lines[this.currentLine];
         
         // Remove any previous user input (everything after the sentence starter)
+        // Find the longest matching starter to avoid false matches
+        let matchedStarter = "";
         for (let starter of this.sentenceStarters) {
-            if (baseLine.startsWith(starter)) {
-                baseLine = starter;
-                break;
+            if (baseLine.startsWith(starter) && starter.length > matchedStarter.length) {
+                matchedStarter = starter;
             }
         }
         
-        // Handle the initial "I'm" case
-        if (baseLine.startsWith("I'm") && !baseLine.includes("also") && !baseLine.includes("becoming") && !baseLine.includes("known") && !baseLine.includes("proud") && !baseLine.includes("learning")) {
+        if (matchedStarter) {
+            baseLine = matchedStarter;
+        } else if (baseLine.startsWith("I'm")) {
+            // Handle the initial "I'm" case
             baseLine = "I'm";
         }
         
@@ -106,15 +109,18 @@ class PoemGenerator {
         let baseLine = this.lines[this.currentLine];
         
         // Remove any previous user input to get the clean base
+        // Find the longest matching starter to avoid false matches
+        let matchedStarter = "";
         for (let starter of this.sentenceStarters) {
-            if (baseLine.startsWith(starter)) {
-                baseLine = starter;
-                break;
+            if (baseLine.startsWith(starter) && starter.length > matchedStarter.length) {
+                matchedStarter = starter;
             }
         }
         
-        // Handle the initial "I'm" case
-        if (baseLine.startsWith("I'm") && !baseLine.includes("also") && !baseLine.includes("becoming") && !baseLine.includes("known") && !baseLine.includes("proud") && !baseLine.includes("learning")) {
+        if (matchedStarter) {
+            baseLine = matchedStarter;
+        } else if (baseLine.startsWith("I'm")) {
+            // Handle the initial "I'm" case
             baseLine = "I'm";
         }
         
